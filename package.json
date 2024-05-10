@@ -1,0 +1,9 @@
+{
+	"name": "workspace-env-monorepo",
+	"version": "0.0.1",
+	"description": "sync envs across your monorepo packages",
+	"repository": "https://github.com/TClark1011/workspace-env.git",
+	"author": "Thomas Clark",
+	"license": "MIT",
+	"private": false
+}
