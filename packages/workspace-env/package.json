@@ -13,11 +13,9 @@
   },
   "devDependencies": {
     "@types/node": "20.12.11",
-    "memfs": "^4.9.2",
-    "read-pkg": "^9.0.1"
+    "memfs": "^4.9.2"
   },
   "dependencies": {
-    "pkg-dir": "^8.0.0",
     "yaml": "^2.4.2",
     "zod": "^3.23.8"
   }
