@@ -1,5 +1,5 @@
 import { WorkspaceEnvConfigInput } from "../configTypes";
-import { vol } from "memfs";
+import { DirectoryJSON, vol } from "memfs";
 import { CONFIG_FILE_NAME } from "../constants";
 import YAML from "yaml";
 
@@ -15,6 +15,7 @@ type ConfigureVirtualFilesInput = {
 
 export const configureVirtualFiles = (
   input: ConfigureVirtualFilesInput,
+  others: DirectoryJSON = {},
 ): void => {
   vol.reset();
   vol.fromJSON({
@@ -27,5 +28,6 @@ export const configureVirtualFiles = (
     ...(input.packageJson && {
       "package.json": JSON.stringify(input.packageJson),
     }),
+    ...others,
   });
 };

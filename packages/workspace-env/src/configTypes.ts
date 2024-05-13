@@ -10,8 +10,15 @@ export type WorkspaceEnvConfigInput = z.infer<
   typeof workspaceEnvConfigInputSchema
 >;
 
-export const workspaceEnvFinalConfigSchema =
-  workspaceEnvConfigInputSchema.required();
+const noGlobStringSchema = z.string().refine((value) => !value.includes("*"), {
+  message: "This string cannot contain a glob pattern",
+});
+
+export const workspaceEnvFinalConfigSchema = z.object({
+  workspaces: z.set(noGlobStringSchema),
+  envDir: noGlobStringSchema,
+  syncEnvsTo: z.set(noGlobStringSchema),
+});
 
 export type WorkspaceEnvFinalConfig = z.infer<
   typeof workspaceEnvFinalConfigSchema

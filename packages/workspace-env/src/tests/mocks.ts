@@ -5,6 +5,10 @@
 import fs from "fs/promises";
 import { fs as virtualFs } from "memfs";
 import { mock } from "node:test";
+
+/**
+ * Mock all fs calls with an in-memory file system.
+ */
 mock.method(fs, "readFile", virtualFs.promises.readFile);
 mock.method(fs, "writeFile", virtualFs.promises.writeFile);
 mock.method(fs, "appendFile", virtualFs.promises.appendFile);
