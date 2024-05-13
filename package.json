@@ -1,9 +1,19 @@
 {
-	"name": "workspace-env-monorepo",
-	"version": "0.0.1",
-	"description": "sync envs across your monorepo packages",
-	"repository": "https://github.com/TClark1011/workspace-env.git",
-	"author": "Thomas Clark",
-	"license": "MIT",
-	"private": false
+  "name": "workspace-env-monorepo",
+  "version": "0.0.1",
+  "description": "the monorepo containing all the code for workspace-env",
+  "repository": "https://github.com/TClark1011/workspace-env.git",
+  "author": "Thomas Clark",
+  "license": "MIT",
+  "private": false,
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": "20.12.1"
+  }
 }
