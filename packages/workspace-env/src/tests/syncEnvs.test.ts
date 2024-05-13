@@ -1,7 +1,6 @@
 import { syncEnvs } from "@/syncEnvs";
 import { configureVirtualFiles } from "@/tests/testUtils";
 import { describe, it } from "node:test";
-import "./mocks";
 import fs from "fs/promises";
 import assert from "assert";
 
