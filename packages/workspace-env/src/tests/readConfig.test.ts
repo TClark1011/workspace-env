@@ -1,7 +1,12 @@
 import { describe, it } from "node:test";
-import { readConfig } from "..";
+import { readConfig } from "@/readConfig";
 import assert from "node:assert";
 import { configureVirtualFiles } from "./testUtils";
+import { defaultEnvFilePatterns } from "@/configTypes";
+
+/**
+ * TODO: test envFilePatterns method
+ */
 
 describe("config file reading", () => {
   it("Can read 100% filled out config", async () => {
@@ -21,6 +26,7 @@ describe("config file reading", () => {
       workspaces: new Set(["apps/frontend"]),
       envDir: "env",
       syncEnvsTo: new Set(["frontend"]),
+      envFilePatterns: new Set(defaultEnvFilePatterns),
     });
   });
 
@@ -49,6 +55,7 @@ describe("config file reading", () => {
       ]),
       envDir: "./",
       syncEnvsTo: new Set(["frontend", "backend"]),
+      envFilePatterns: new Set(defaultEnvFilePatterns),
     });
   });
 
@@ -68,6 +75,7 @@ describe("config file reading", () => {
       workspaces: new Set(["packages/package1"]),
       envDir: "./",
       syncEnvsTo: new Set(["package1"]),
+      envFilePatterns: new Set(defaultEnvFilePatterns),
     });
   });
 
@@ -87,6 +95,7 @@ describe("config file reading", () => {
       workspaces: new Set(["projects/project1"]),
       envDir: "./",
       syncEnvsTo: new Set(["project1"]),
+      envFilePatterns: new Set(defaultEnvFilePatterns),
     });
   });
 
@@ -109,6 +118,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend"]),
         envDir: "./",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -130,6 +140,7 @@ describe("config file reading", () => {
         workspaces: new Set(["packages/packageA"]),
         envDir: "env",
         syncEnvsTo: new Set(["packageA"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -152,6 +163,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend", "apps/backend"]),
         envDir: "./",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -174,6 +186,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend"]),
         envDir: "env",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -198,6 +211,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend", "apps/backend"]),
         envDir: "./",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -220,6 +234,7 @@ describe("config file reading", () => {
         workspaces: new Set(["packages/frontend"]),
         envDir: "env",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -245,6 +260,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend", "apps/backend"]),
         envDir: "env",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
   });
@@ -268,6 +284,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend"]),
         envDir: "./",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -289,6 +306,7 @@ describe("config file reading", () => {
         workspaces: new Set(["packages/packageA"]),
         envDir: "env",
         syncEnvsTo: new Set(["packageA"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -311,6 +329,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend", "apps/backend"]),
         envDir: "./",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -333,6 +352,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend"]),
         envDir: "env",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -357,6 +377,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend", "apps/backend"]),
         envDir: "./",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -379,6 +400,7 @@ describe("config file reading", () => {
         workspaces: new Set(["packages/frontend"]),
         envDir: "env",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
 
@@ -404,6 +426,7 @@ describe("config file reading", () => {
         workspaces: new Set(["apps/frontend", "apps/backend"]),
         envDir: "env",
         syncEnvsTo: new Set(["frontend"]),
+        envFilePatterns: new Set(defaultEnvFilePatterns),
       });
     });
   });

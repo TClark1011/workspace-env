@@ -8,7 +8,8 @@
   "private": false,
   "scripts": {
     "start": "ts-node src/index.ts",
-    "test": "node --test --require ts-node/register --require ./src/tests/mocks.ts src/tests/*.test.ts",
+    "test": "node --require ts-node/register --require ./src/tests/mocks.ts --test \"**/*.test.ts\"",
+    "test:only": "node --require ts-node/register --require ./src/tests/mocks.ts --test --test-only \"**/*.test.ts\"",
     "build": "tsc"
   },
   "devDependencies": {

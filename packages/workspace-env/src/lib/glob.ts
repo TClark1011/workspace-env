@@ -6,6 +6,6 @@ export const customGlob = ((
   options: GlobOptions = {},
 ) =>
   glob(input, {
-    fs,
+    fs: fs, // required for our tests to work
     ...options,
   })) as never as typeof glob;

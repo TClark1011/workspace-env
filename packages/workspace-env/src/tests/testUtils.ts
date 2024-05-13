@@ -1,6 +1,6 @@
 import { WorkspaceEnvConfigInput } from "../configTypes";
 import { DirectoryJSON, vol } from "memfs";
-import { CONFIG_FILE_NAME } from "../constants";
+import { CONFIG_FILE_NAME } from "@/constants";
 import YAML from "yaml";
 
 type ConfigureVirtualFilesInput = {
@@ -19,9 +19,7 @@ export const configureVirtualFiles = (
 ): void => {
   vol.reset();
   vol.fromJSON({
-    ...(input.workspaceEnvConfig && {
-      [CONFIG_FILE_NAME]: JSON.stringify(input.workspaceEnvConfig),
-    }),
+    [CONFIG_FILE_NAME]: JSON.stringify(input.workspaceEnvConfig ?? {}),
     ...(input.pnpmWorkspaces && {
       "pnpm-workspace.yaml": YAML.stringify(input.pnpmWorkspaces),
     }),
