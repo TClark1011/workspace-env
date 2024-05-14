@@ -1,22 +1,23 @@
 {
   "name": "workspace-env",
-  "version": "0.0.1",
+  "version": "0.0.11",
   "description": "sync envs across your monorepo packages",
   "repository": "https://github.com/TClark1011/workspace-env.git",
   "author": "Thomas Clark",
   "license": "MIT",
   "private": false,
-  "bin": "./build/cli.js",
+  "bin": "./bin.js",
   "scripts": {
     "start": "ts-node src/index.ts",
     "test": "vitest",
     "test:only": "node --require ts-node/register --require ./src/tests/mocks.ts --test --test-only \"**/*.test.ts\"",
     "build": "tsc",
-    "build:cli": "tsc -p tsconfig.cli.json",
+    "build:cli": "esbuild src/cli.ts --bundle --platform=node --target=node10.4 --outfile=bin.js",
     "prepublish": "pnpm build:cli"
   },
   "devDependencies": {
     "@types/node": "20.12.11",
+    "esbuild": "^0.21.2",
     "memfs": "^4.9.2",
     "tsconfig-paths": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.2",
