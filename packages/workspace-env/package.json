@@ -2,11 +2,16 @@
   "name": "workspace-env",
   "version": "0.0.13",
   "description": "sync envs across your monorepo packages",
-  "repository": "https://github.com/TClark1011/workspace-env.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TClark1011/workspace-env.git"
+  },
   "author": "Thomas Clark",
   "license": "MIT",
   "private": false,
-  "bin": "./bin.js",
+  "bin": {
+    "workspace-env": "bin.js"
+  },
   "scripts": {
     "start": "ts-node src/index.ts",
     "test": "vitest",
