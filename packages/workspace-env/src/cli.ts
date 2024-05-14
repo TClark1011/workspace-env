@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { DEFAULT_CONFIG_FILE_NAME } from "@/constants";
 import { syncEnvs } from "@/syncEnvs";
 import * as cmd from "cmd-ts";
