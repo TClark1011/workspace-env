@@ -1,6 +1,6 @@
 {
   "name": "workspace-env",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "sync envs across your monorepo packages",
   "repository": "https://github.com/TClark1011/workspace-env.git",
   "author": "Thomas Clark",
@@ -12,7 +12,7 @@
     "test": "vitest",
     "test:only": "node --require ts-node/register --require ./src/tests/mocks.ts --test --test-only \"**/*.test.ts\"",
     "build": "tsc",
-    "build:cli": "esbuild src/cli.ts --bundle --platform=node --target=node10.4 --outfile=bin.js",
+    "build:cli": "esbuild src/cli/bin.ts --bundle --platform=node --target=node10.4 --outfile=bin.js",
     "prepublish": "pnpm build:cli"
   },
   "devDependencies": {

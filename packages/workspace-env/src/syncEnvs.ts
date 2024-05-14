@@ -1,14 +1,14 @@
-import { glob } from "glob";
 import { readConfig } from "@/readConfig";
 import fs from "fs/promises";
 import path from "path";
-import { CLIArgs, DEFAULT_CLI_ARGS } from "@/cli";
+import { customGlob } from "$glob";
+import { CLIOptionsFinal, DEFAULT_CLI_OPTIONS_FINAL } from "@/configTypes";
 
 const listEnvFilePaths = async (
   dir: string,
   patterns: string[],
 ): Promise<string[]> => {
-  const files = await glob(
+  const files = await customGlob(
     patterns.map((p) => path.join(dir, p)),
     {
       dot: true,
@@ -51,7 +51,9 @@ const getLastSegmentOfPath = (path: string): string => {
   return lastSegment;
 };
 
-export const syncEnvs = async (cliArgs: CLIArgs = DEFAULT_CLI_ARGS) => {
+export const syncEnvs = async (
+  cliArgs: CLIOptionsFinal = DEFAULT_CLI_OPTIONS_FINAL,
+) => {
   const config = await readConfig(cliArgs);
 
   const envFilesToCopy = await listEnvFilePaths(config.envDir, [

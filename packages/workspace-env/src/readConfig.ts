@@ -1,13 +1,14 @@
 import fs from "fs/promises";
 import {
+  CLIOptionsFinal,
+  DEFAULT_CLI_OPTIONS_FINAL,
   WorkspaceEnvFinalConfig,
   workspaceEnvConfigInputSchema,
   workspaceEnvFinalConfigSchema,
 } from "@/configTypes";
 import YAML from "yaml";
 import z from "zod";
-import { glob } from "glob";
-import { CLIArgs, DEFAULT_CLI_ARGS } from "@/cli";
+import { customGlob } from "$glob";
 
 const pmpmWorkspacesDataSchema = z.object({
   packages: z.array(z.string()).optional(),
@@ -67,8 +68,11 @@ const getLastPathSegment = (path: string): string => {
 
 export const readConfig = async ({
   configFilePath,
-}: CLIArgs = DEFAULT_CLI_ARGS): Promise<WorkspaceEnvFinalConfig> => {
-  const rawConfigFileContents = await fs.readFile(configFilePath, "utf8");
+}: CLIOptionsFinal = DEFAULT_CLI_OPTIONS_FINAL): Promise<WorkspaceEnvFinalConfig> => {
+  const rawConfigFileContents = await fs
+    .readFile(configFilePath, "utf8")
+    .catch(() => "{}");
+
   const untypedConfigData = JSON.parse(rawConfigFileContents);
   const configData = workspaceEnvConfigInputSchema.parse(untypedConfigData);
 
@@ -77,7 +81,7 @@ export const readConfig = async ({
 
   const workspacePaths = await Promise.all(
     workspaces.map((pathGlobPattern) =>
-      glob(pathGlobPattern, {
+      customGlob(pathGlobPattern, {
         nodir: false,
       }).then((paths) => {
         if (paths.length === 0) {
