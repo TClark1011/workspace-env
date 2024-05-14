@@ -6,8 +6,8 @@ import {
 } from "@/configTypes";
 import YAML from "yaml";
 import z from "zod";
-import { CONFIG_FILE_NAME } from "@/constants";
-import { customGlob } from "$glob";
+import { glob } from "glob";
+import { CLIArgs, DEFAULT_CLI_ARGS } from "@/cli";
 
 const pmpmWorkspacesDataSchema = z.object({
   packages: z.array(z.string()).optional(),
@@ -65,8 +65,10 @@ const getLastPathSegment = (path: string): string => {
   return lastSegment;
 };
 
-export const readConfig = async (): Promise<WorkspaceEnvFinalConfig> => {
-  const rawConfigFileContents = await fs.readFile(CONFIG_FILE_NAME, "utf8");
+export const readConfig = async ({
+  configFilePath,
+}: CLIArgs = DEFAULT_CLI_ARGS): Promise<WorkspaceEnvFinalConfig> => {
+  const rawConfigFileContents = await fs.readFile(configFilePath, "utf8");
   const untypedConfigData = JSON.parse(rawConfigFileContents);
   const configData = workspaceEnvConfigInputSchema.parse(untypedConfigData);
 
@@ -75,7 +77,7 @@ export const readConfig = async (): Promise<WorkspaceEnvFinalConfig> => {
 
   const workspacePaths = await Promise.all(
     workspaces.map((pathGlobPattern) =>
-      customGlob(pathGlobPattern, {
+      glob(pathGlobPattern, {
         nodir: false,
       }).then((paths) => {
         if (paths.length === 0) {
