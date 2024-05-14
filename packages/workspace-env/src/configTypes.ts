@@ -38,3 +38,9 @@ export const workspaceEnvFinalConfigSchema = z.object({
 export type WorkspaceEnvFinalConfig = z.infer<
   typeof workspaceEnvFinalConfigSchema
 >;
+
+export const cliOptionsSchema = z.object({
+  config: z.string().optional(),
+});
+
+export type CliOptions = z.infer<typeof cliOptionsSchema>;

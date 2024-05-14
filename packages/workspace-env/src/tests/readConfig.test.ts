@@ -1,6 +1,5 @@
-import { describe, it } from "node:test";
+import { describe, it, assert } from "vitest";
 import { readConfig } from "@/readConfig";
-import assert from "node:assert";
 import { configureVirtualFiles } from "./testUtils";
 import { defaultEnvFilePatterns } from "@/configTypes";
 

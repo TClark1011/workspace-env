@@ -1,8 +1,7 @@
 import { syncEnvs } from "@/syncEnvs";
 import { configureVirtualFiles } from "@/tests/testUtils";
-import { describe, it } from "node:test";
-import fs from "fs/promises";
-import assert from "assert";
+import { describe, it, assert } from "vitest";
+import { fs } from "memfs";
 
 describe("syncEnvs (single workspace)", () => {
   it("Copies ENV files", async () => {
@@ -21,7 +20,9 @@ describe("syncEnvs (single workspace)", () => {
     );
     await syncEnvs();
 
-    const filesInTheAPackage = await fs.readdir("packages/a");
+    const filesInTheAPackage = (await fs.promises.readdir(
+      "packages/a",
+    )) as string[];
 
     assert(filesInTheAPackage.includes(".env"), ".env was not copied");
     assert(
@@ -52,18 +53,23 @@ describe("syncEnvs (single workspace)", () => {
       },
     );
 
-    const originalBaseEnvContent = await fs.readFile("packages/a/.env", "utf8");
-    const originalLocalEnvContent = await fs.readFile(
+    const originalBaseEnvContent = await fs.promises.readFile(
+      "packages/a/.env",
+      "utf8",
+    );
+    const originalLocalEnvContent = await fs.promises.readFile(
       "packages/a/.env.local",
       "utf8",
     );
-    const originalDevelopmentEnvContent = await fs.readFile(
+    const originalDevelopmentEnvContent = await fs.promises.readFile(
       "packages/a/.development.env",
       "utf8",
     );
     await syncEnvs();
 
-    const filesInTheAPackage = await fs.readdir("packages/a");
+    const filesInTheAPackage = (await fs.promises.readdir(
+      "packages/a",
+    )) as string[];
 
     assert(filesInTheAPackage.includes(".env"), ".env was not copied");
     assert(
@@ -75,12 +81,15 @@ describe("syncEnvs (single workspace)", () => {
       ".development.env was not copied",
     );
 
-    const newBaseEnvContent = await fs.readFile("packages/a/.env", "utf8");
-    const newLocalEnvContent = await fs.readFile(
+    const newBaseEnvContent = await fs.promises.readFile(
+      "packages/a/.env",
+      "utf8",
+    );
+    const newLocalEnvContent = await fs.promises.readFile(
       "packages/a/.env.local",
       "utf8",
     );
-    const newDevelopmentEnvContent = await fs.readFile(
+    const newDevelopmentEnvContent = await fs.promises.readFile(
       "packages/a/.development.env",
       "utf8",
     );
@@ -121,7 +130,9 @@ describe("syncEnvs (multiple workspaces)", () => {
     );
     await syncEnvs();
 
-    const filesInTheAPackage = await fs.readdir("packages/a");
+    const filesInTheAPackage = (await fs.promises.readdir(
+      "packages/a",
+    )) as string[];
 
     assert(
       filesInTheAPackage.includes(".env"),
@@ -136,7 +147,9 @@ describe("syncEnvs (multiple workspaces)", () => {
       ".development.env was not copied to package A",
     );
 
-    const filesInTheBPackage = await fs.readdir("packages/b");
+    const filesInTheBPackage = (await fs.promises.readdir(
+      "packages/b",
+    )) as string[];
 
     assert(
       filesInTheBPackage.includes(".env"),
@@ -173,34 +186,36 @@ describe("syncEnvs (multiple workspaces)", () => {
       },
     );
 
-    const originalABaseEnvContent = await fs.readFile(
+    const originalABaseEnvContent = await fs.promises.readFile(
       "packages/a/.env",
       "utf8",
     );
-    const originalALocalEnvContent = await fs.readFile(
+    const originalALocalEnvContent = await fs.promises.readFile(
       "packages/a/.env.local",
       "utf8",
     );
-    const originalADevelopmentEnvContent = await fs.readFile(
+    const originalADevelopmentEnvContent = await fs.promises.readFile(
       "packages/a/.development.env",
       "utf8",
     );
 
-    const originalBBaseEnvContent = await fs.readFile(
+    const originalBBaseEnvContent = await fs.promises.readFile(
       "packages/b/.env",
       "utf8",
     );
-    const originalBLocalEnvContent = await fs.readFile(
+    const originalBLocalEnvContent = await fs.promises.readFile(
       "packages/b/.env.local",
       "utf8",
     );
-    const originalBDevelopmentEnvContent = await fs.readFile(
+    const originalBDevelopmentEnvContent = await fs.promises.readFile(
       "packages/b/.development.env",
       "utf8",
     );
     await syncEnvs();
 
-    const filesInTheAPackage = await fs.readdir("packages/a");
+    const filesInTheAPackage = (await fs.promises.readdir(
+      "packages/a",
+    )) as string[];
 
     assert(
       filesInTheAPackage.includes(".env"),
@@ -215,7 +230,9 @@ describe("syncEnvs (multiple workspaces)", () => {
       ".development.env was not copied to package A",
     );
 
-    const filesInTheBPackage = await fs.readdir("packages/b");
+    const filesInTheBPackage = (await fs.promises.readdir(
+      "packages/b",
+    )) as string[];
 
     assert(
       filesInTheBPackage.includes(".env"),
@@ -230,12 +247,15 @@ describe("syncEnvs (multiple workspaces)", () => {
       ".development.env was not copied to package B",
     );
 
-    const newBaseAEnvContent = await fs.readFile("packages/a/.env", "utf8");
-    const newLocalAEnvContent = await fs.readFile(
+    const newBaseAEnvContent = await fs.promises.readFile(
+      "packages/a/.env",
+      "utf8",
+    );
+    const newLocalAEnvContent = await fs.promises.readFile(
       "packages/a/.env.local",
       "utf8",
     );
-    const newDevelopmentAEnvContent = await fs.readFile(
+    const newDevelopmentAEnvContent = await fs.promises.readFile(
       "packages/a/.development.env",
       "utf8",
     );
@@ -256,12 +276,15 @@ describe("syncEnvs (multiple workspaces)", () => {
       "package A .development.env content was not changed",
     );
 
-    const newBaseBEnvContent = await fs.readFile("packages/b/.env", "utf8");
-    const newLocalBEnvContent = await fs.readFile(
+    const newBaseBEnvContent = await fs.promises.readFile(
+      "packages/b/.env",
+      "utf8",
+    );
+    const newLocalBEnvContent = await fs.promises.readFile(
       "packages/b/.env.local",
       "utf8",
     );
-    const newDevelopmentBEnvContent = await fs.readFile(
+    const newDevelopmentBEnvContent = await fs.promises.readFile(
       "packages/b/.development.env",
       "utf8",
     );
