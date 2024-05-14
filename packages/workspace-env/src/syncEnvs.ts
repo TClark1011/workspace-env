@@ -1,14 +1,14 @@
 import { readConfig } from "@/readConfig";
 import fs from "fs/promises";
 import path from "path";
-import { customGlob } from "$glob";
 import { CLIOptionsFinal, DEFAULT_CLI_OPTIONS_FINAL } from "@/configTypes";
+import { glob } from "glob";
 
 const listEnvFilePaths = async (
   dir: string,
   patterns: string[],
 ): Promise<string[]> => {
-  const files = await customGlob(
+  const files = await glob(
     patterns.map((p) => path.join(dir, p)),
     {
       dot: true,

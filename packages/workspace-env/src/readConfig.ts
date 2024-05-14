@@ -8,7 +8,7 @@ import {
 } from "@/configTypes";
 import YAML from "yaml";
 import z from "zod";
-import { customGlob } from "$glob";
+import { glob } from "glob";
 
 const pmpmWorkspacesDataSchema = z.object({
   packages: z.array(z.string()).optional(),
@@ -76,22 +76,23 @@ export const readConfig = async ({
   const untypedConfigData = JSON.parse(rawConfigFileContents);
   const configData = workspaceEnvConfigInputSchema.parse(untypedConfigData);
 
+  console.log("(readConfig) 2. ", { configData });
+
   const workspaces =
     configData.workspaces ?? (await readWorkspacesFromProject());
 
   const workspacePaths = await Promise.all(
-    workspaces.map((pathGlobPattern) =>
-      customGlob(pathGlobPattern, {
+    workspaces.map(async (pathGlobPattern) => {
+      const paths = await glob(pathGlobPattern, {
         nodir: false,
-      }).then((paths) => {
-        if (paths.length === 0) {
-          throw new Error(
-            `No workspaces found for pattern: ${pathGlobPattern}`,
-          );
-        }
-        return paths;
-      }),
-    ),
+      });
+
+      if (paths.length === 0) {
+        throw new Error(`No workspaces found for pattern: ${pathGlobPattern}`);
+      }
+
+      return paths;
+    }),
   ).then((paths) => paths.flat());
 
   if (workspacePaths.length === 0) {

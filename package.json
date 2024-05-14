@@ -18,5 +18,8 @@
   },
   "engines": {
     "node": "22.1.0"
+  },
+  "scripts": {
+    "build-run-cli": "pnpm --filter workspace-env build:cli && mv ./packages/workspace-env/bin.js ./bin.js && node ./bin.js"
   }
 }
