@@ -17,7 +17,7 @@
     "typescript-eslint": "^7.8.0"
   },
   "engines": {
-    "node": "22.1.0"
+    "node": "20.13.1"
   },
   "scripts": {
     "build-run-cli": "pnpm --filter workspace-env build:cli && mv ./packages/workspace-env/bin.js ./bin.js && node ./bin.js"
