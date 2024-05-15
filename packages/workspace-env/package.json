@@ -1,6 +1,6 @@
 {
   "name": "workspace-env",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "sync envs across your monorepo packages",
   "repository": {
     "type": "git",

@@ -2,9 +2,26 @@ import { DEFAULT_CONFIG_FILE_NAME } from "@/constants";
 import { z } from "zod";
 
 const workspaceEnvBehaviourInputFieldsSchema = z.object({
-  envDir: z.string().optional(), // use root dir if not provided
-  syncEnvsTo: z.string().array().optional(), // sync to all workspaces if not provided
-  envFilePatterns: z.string().array().optional(),
+  envDir: z
+    .string()
+    .optional()
+    .describe(
+      "The directory where the environment files are stored. If not provided, defaults to current working directory.",
+    ),
+  syncEnvsTo: z
+    .string()
+    .array()
+    .optional()
+    .describe(
+      "The workspace folders to sync env files to. If not provided, env files will be synced to all workspaces",
+    ),
+  envFilePatterns: z
+    .string()
+    .array()
+    .optional()
+    .describe(
+      "The file patterns to search for environment files. Can use specific file names or glob patterns.",
+    ),
 });
 
 export type WorkspaceEnvBehaviourOptions = z.infer<
@@ -13,7 +30,10 @@ export type WorkspaceEnvBehaviourOptions = z.infer<
 
 export const workspaceEnvProfileInputSchema = z
   .object({
-    workspaces: z.string().array(),
+    workspaces: z
+      .string()
+      .array()
+      .describe("The workspace directory names the profile should apply to."),
   })
   .and(
     workspaceEnvBehaviourInputFieldsSchema.omit({
@@ -23,7 +43,12 @@ export const workspaceEnvProfileInputSchema = z
 
 export const workspaceEnvConfigInputSchema =
   workspaceEnvBehaviourInputFieldsSchema.extend({
-    profiles: z.array(workspaceEnvProfileInputSchema).optional(),
+    profiles: z
+      .array(workspaceEnvProfileInputSchema)
+      .optional()
+      .describe(
+        "Define profiles to apply different sync rules to different workspaces.",
+      ),
   });
 
 export type WorkspaceEnvConfigInput = z.input<
