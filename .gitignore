@@ -1,5 +1,6 @@
 **/node_modules
-**/build
 **/.DS_Storepn
 
+**/build
+**/bin
 bin.js
