@@ -14,7 +14,7 @@
     "@astrojs/starlight": "^0.22.3",
     "astro": "^4.3.5",
     "sharp": "^0.32.5",
-    "workspace-env": "latest",
+    "workspace-env": "^0.0.22",
     "zod-to-json-schema": "^3.23.0"
   }
 }

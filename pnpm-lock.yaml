@@ -48,8 +48,8 @@ importers:
         specifier: ^0.32.5
         version: 0.32.6
       workspace-env:
-        specifier: latest
-        version: 0.0.19
+        specifier: ^0.0.22
+        version: 0.0.22
       zod-to-json-schema:
         specifier: ^3.23.0
         version: 3.23.0(zod@3.23.8)
@@ -3425,8 +3425,8 @@ packages:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
 
-  workspace-env@0.0.19:
-    resolution: {integrity: sha512-CBrXDDyFf/8VJIkApjM6slfztqfWh1TKKw/FD+a1f6d+G1BD025/OAX5SkPAlrqG9JMvd8xlRdbEcPkXd1n07g==}
+  workspace-env@0.0.22:
+    resolution: {integrity: sha512-0HdJ3sc9/j4NbmZ7LKRC8+Afsv2hty0Q6DY5NQiv2FY/LhQBpZ1HacmBp+Ob0V9gx7Hx7Y1Jq9EWVs4hCxPTxA==}
     hasBin: true
 
   wrap-ansi@7.0.0:
@@ -7403,7 +7403,7 @@ snapshots:
 
   word-wrap@1.2.5: {}
 
-  workspace-env@0.0.19:
+  workspace-env@0.0.22:
     dependencies:
       cmd-ts: 0.13.0
       glob: 10.3.15
