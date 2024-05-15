@@ -1,6 +1,6 @@
 {
   "name": "workspace-env",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "sync envs across your monorepo packages",
   "repository": {
     "type": "git",
@@ -12,13 +12,24 @@
   "bin": {
     "workspace-env": "bin.js"
   },
-  "main": "build/index.js",
+  "main": "./build/index.js",
+  "exports": {
+    "import": {
+      "types": "./build/index.d.ts",
+      "require": "./build/index.mjs"
+    },
+    "require": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js"
+    }
+  },
+  "types": "./build/index.d.ts",
   "scripts": {
     "start": "node bin.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "pnpm build:lib && pnpm build:cli",
-    "build:lib": "tsup src/index.ts --dts --out-dir=build",
+    "build:lib": "tsup src/index.ts --dts --out-dir=build --format esm,cjs,iife",
     "build:cli": "esbuild src/cli/bin.ts --bundle --platform=node --target=node10.4 --outfile=bin/index.js",
     "prepublish": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "lint": "eslint src",
