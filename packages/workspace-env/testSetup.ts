@@ -21,3 +21,5 @@ vi.mock("glob", async (originalImport) => {
       })) as never as typeof originalGlobImport.glob,
   } satisfies typeof originalGlobImport;
 });
+
+//a
