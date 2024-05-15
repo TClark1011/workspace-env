@@ -1,6 +1,6 @@
 {
   "name": "workspace-env-ci-testing",
-  "version": "0.0.19",
+  "version": "1.0.0",
   "description": "sync envs across your monorepo packages",
   "repository": {
     "type": "git",
