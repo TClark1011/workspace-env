@@ -2,6 +2,7 @@ import { syncEnvs } from "@/syncEnvs";
 import { configureVirtualFiles } from "@/tests/testUtils";
 import { describe, it, assert } from "vitest";
 import { fs } from "memfs";
+import { deriveProgramState } from "@/deriveProgramState";
 
 describe("syncEnvs (single workspace)", () => {
   it("Copies ENV files", async () => {
@@ -18,7 +19,9 @@ describe("syncEnvs (single workspace)", () => {
         "packages/a/package.json": "{}",
       },
     );
-    await syncEnvs();
+
+    const programState = await deriveProgramState();
+    await syncEnvs(programState);
 
     const filesInTheAPackage = (await fs.promises.readdir(
       "packages/a",
@@ -65,7 +68,9 @@ describe("syncEnvs (single workspace)", () => {
       "packages/a/.development.env",
       "utf8",
     );
-    await syncEnvs();
+
+    const programState = await deriveProgramState();
+    await syncEnvs(programState);
 
     const filesInTheAPackage = (await fs.promises.readdir(
       "packages/a",
@@ -128,7 +133,9 @@ describe("syncEnvs (multiple workspaces)", () => {
         "packages/b/package.json": "{}",
       },
     );
-    await syncEnvs();
+
+    const programState = await deriveProgramState();
+    await syncEnvs(programState);
 
     const filesInTheAPackage = (await fs.promises.readdir(
       "packages/a",
@@ -211,7 +218,9 @@ describe("syncEnvs (multiple workspaces)", () => {
       "packages/b/.development.env",
       "utf8",
     );
-    await syncEnvs();
+
+    const programState = await deriveProgramState();
+    await syncEnvs(programState);
 
     const filesInTheAPackage = (await fs.promises.readdir(
       "packages/a",

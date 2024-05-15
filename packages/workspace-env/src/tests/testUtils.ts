@@ -1,4 +1,4 @@
-import { WorkspaceEnvConfigInput } from "../configTypes";
+import { ProgramState, WorkspaceEnvConfigInput } from "../configTypes";
 import { DirectoryJSON, vol } from "memfs";
 import { DEFAULT_CONFIG_FILE_NAME } from "@/constants";
 import YAML from "yaml";
@@ -29,3 +29,13 @@ export const configureVirtualFiles = (
     ...others,
   });
 };
+
+export const stringifyConfig = (config: WorkspaceEnvConfigInput): string =>
+  JSON.stringify(config, null, 2);
+
+export const composeMatchObjectHelper =
+  <T>() =>
+  (data: Partial<Record<keyof T, unknown>>) =>
+    data;
+
+export const psm = composeMatchObjectHelper<ProgramState>();

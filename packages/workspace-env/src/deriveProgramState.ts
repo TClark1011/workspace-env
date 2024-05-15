@@ -2,13 +2,14 @@ import fs from "fs/promises";
 import {
   CLIOptionsFinal,
   DEFAULT_CLI_OPTIONS_FINAL,
-  WorkspaceEnvFinalConfig,
+  ProgramState,
+  programStateSchema,
   workspaceEnvConfigInputSchema,
-  workspaceEnvFinalConfigSchema,
 } from "@/configTypes";
 import YAML from "yaml";
 import z from "zod";
 import { glob } from "glob";
+import { DEFAULT_ENV_FILE_PATTERNS } from "@/constants";
 
 const pmpmWorkspacesDataSchema = z.object({
   packages: z.array(z.string()).optional(),
@@ -35,7 +36,7 @@ const neededPackageJsonDataSchema = z.object({
 const readPackageWorkspaces = async (): Promise<string[] | undefined> => {
   const rawPackageJsonFileContent = await fs
     .readFile("package.json", "utf8")
-    .catch(() => JSON.stringify({}));
+    .catch(() => "{}");
   const untypedPackageJsonData = JSON.parse(rawPackageJsonFileContent);
   const packageJsonData = neededPackageJsonDataSchema.parse(
     untypedPackageJsonData,
@@ -66,9 +67,9 @@ const getLastPathSegment = (path: string): string => {
   return lastSegment;
 };
 
-export const readConfig = async ({
+export const deriveProgramState = async ({
   configFilePath,
-}: CLIOptionsFinal = DEFAULT_CLI_OPTIONS_FINAL): Promise<WorkspaceEnvFinalConfig> => {
+}: CLIOptionsFinal = DEFAULT_CLI_OPTIONS_FINAL): Promise<ProgramState> => {
   const rawConfigFileContents = await fs
     .readFile(configFilePath, "utf8")
     .catch(() => "{}");
@@ -97,14 +98,15 @@ export const readConfig = async ({
     throw new Error("No workspaces found");
   }
 
-  const workspaceNames = workspacePaths.map(getLastPathSegment);
+  const workspaceDirectoryNames = workspacePaths.map(getLastPathSegment);
 
-  const outputData: WorkspaceEnvFinalConfig = {
-    workspaces: new Set(workspacePaths),
-    envDir: configData.envDir ?? "./",
-    syncEnvsTo: new Set(configData.syncEnvsTo ?? workspaceNames),
-    envFilePatterns: new Set(configData.envFilePatterns),
+  const outputData: ProgramState = {
+    envDirectoryPath: configData.envDir ?? "./",
+    workspacePaths,
+    envFilePatterns: configData.envFilePatterns ?? DEFAULT_ENV_FILE_PATTERNS,
+    syncEnvsToWorkspaceDirectoryNames:
+      configData.syncEnvsTo ?? workspaceDirectoryNames,
   };
 
-  return workspaceEnvFinalConfigSchema.parse(outputData);
+  return programStateSchema.parse(outputData);
 };

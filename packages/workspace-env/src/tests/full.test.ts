@@ -1,6 +1,14 @@
-import { syncEnvs } from "@/syncEnvs";
+import { theCommand } from "@/cli/command";
+import { DEFAULT_CONFIG_FILE_NAME } from "@/constants";
+import { stringifyConfig } from "@/tests/testUtils";
+import { run } from "cmd-ts";
 import { vol, fs as virtualFs } from "memfs";
-import { expect, test } from "vitest";
+import { beforeEach, expect, test } from "vitest";
+import YAML from "yaml";
+
+beforeEach(() => {
+  vol.reset();
+});
 
 test("Basic Behaviour With No Config File", async () => {
   vol.fromJSON({
@@ -12,7 +20,7 @@ test("Basic Behaviour With No Config File", async () => {
     "packages/b/package.json": "{}",
   });
 
-  await syncEnvs();
+  await run(theCommand, []);
 
   const filesInTheAPackage = (await virtualFs.promises.readdir(
     "packages/a",
@@ -40,3 +48,42 @@ test("Basic Behaviour With No Config File", async () => {
 
   expect(bPackageEnvFileContent).toEqual("foo=bar");
 });
+
+test("Basic Kitchen Sink", async () => {
+  vol.fromJSON({
+    "pnpm-workspace.yaml": YAML.stringify({
+      packages: ["apps/*"],
+    }),
+    [DEFAULT_CONFIG_FILE_NAME]: stringifyConfig({
+      envDir: "env",
+      envFilePatterns: [".env"],
+      syncEnvsTo: ["yes"],
+    }),
+    "env/.env": "foo=bar",
+    "apps/no/package.json": "{}",
+    "apps/yes/package.json": "{}",
+  });
+
+  await run(theCommand, []);
+
+  const filesInNoPackage = (await virtualFs.promises.readdir(
+    "apps/no",
+  )) as string[];
+
+  expect(filesInNoPackage).not.toContain(".env");
+
+  const filesInYesPackage = (await virtualFs.promises.readdir(
+    "apps/yes",
+  )) as string[];
+
+  expect(filesInYesPackage).toContain(".env");
+
+  const yesPackageEnvFileContent = (await virtualFs.promises.readFile(
+    "apps/yes/.env",
+    "utf8",
+  )) as string;
+
+  expect(yesPackageEnvFileContent).toEqual("foo=bar");
+});
+
+test.todo("Basic Kitchen Sink w/ Custom Config Path");

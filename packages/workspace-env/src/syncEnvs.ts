@@ -1,7 +1,6 @@
-import { readConfig } from "@/readConfig";
 import fs from "fs/promises";
 import path from "path";
-import { CLIOptionsFinal, DEFAULT_CLI_OPTIONS_FINAL } from "@/configTypes";
+import { ProgramState } from "@/configTypes";
 import { glob } from "glob";
 
 const listEnvFilePaths = async (
@@ -51,18 +50,14 @@ const getLastSegmentOfPath = (path: string): string => {
   return lastSegment;
 };
 
-export const syncEnvs = async (
-  cliArgs: CLIOptionsFinal = DEFAULT_CLI_OPTIONS_FINAL,
-) => {
-  const config = await readConfig(cliArgs);
-
-  const envFilesToCopy = await listEnvFilePaths(config.envDir, [
-    ...config.envFilePatterns,
+export const syncEnvs = async (programState: ProgramState) => {
+  const envFilesToCopy = await listEnvFilePaths(programState.envDirectoryPath, [
+    ...programState.envFilePatterns,
   ]);
 
-  const workspacePathsToSyncTo = [...config.workspaces].filter(
+  const workspacePathsToSyncTo = programState.workspacePaths.filter(
     (workspacePath) =>
-      [...config.syncEnvsTo].some((syncPath) =>
+      programState.syncEnvsToWorkspaceDirectoryNames.some((syncPath) =>
         workspacePath.endsWith(syncPath),
       ),
   );
@@ -70,7 +65,7 @@ export const syncEnvs = async (
   // Delete all existing envs
   await Promise.all(
     workspacePathsToSyncTo.map((workspaceDirPath) =>
-      deleteAllEnvFilesInDir(workspaceDirPath, [...config.envFilePatterns]),
+      deleteAllEnvFilesInDir(workspaceDirPath, programState.envFilePatterns),
     ),
   );
 
