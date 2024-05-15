@@ -22,4 +22,6 @@ vi.mock("glob", async (originalImport) => {
   } satisfies typeof originalGlobImport;
 });
 
+console.log("a");
+
 //a
