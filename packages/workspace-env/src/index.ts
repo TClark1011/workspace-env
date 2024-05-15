@@ -1,3 +1,3 @@
-export * from "@/deriveProgramState";
-export * from "@/syncEnvs";
+export * from "@/deriveProfiles";
+export * from "@/runSyncForProfile";
 export * from "@/configTypes";

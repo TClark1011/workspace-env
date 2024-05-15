@@ -1,7 +1,7 @@
 import { cliOptionsFinalSchema } from "@/configTypes";
 import { DEFAULT_CONFIG_FILE_NAME } from "@/constants";
-import { deriveProgramState } from "@/deriveProgramState";
-import { syncEnvs } from "@/syncEnvs";
+import { deriveProfiles } from "@/deriveProfiles";
+import { runSyncForProfile } from "@/runSyncForProfile";
 import { guidedParse } from "@/utils";
 import * as cmd from "cmd-ts";
 
@@ -31,8 +31,8 @@ export const theCommand = cmd.command({
       inWatchMode: rawCliArgs.inWatchMode,
     });
 
-    const programState = await deriveProgramState(cliArgs);
+    const profiles = await deriveProfiles(cliArgs);
 
-    await syncEnvs(programState);
+    await Promise.all(profiles.map(runSyncForProfile));
   },
 });

@@ -2,8 +2,7 @@ import fs from "fs/promises";
 import {
   CLIOptionsFinal,
   DEFAULT_CLI_OPTIONS_FINAL,
-  ProgramState,
-  programStateSchema,
+  WorkspaceEnvProfile,
   workspaceEnvConfigInputSchema,
 } from "@/configTypes";
 import YAML from "yaml";
@@ -67,18 +66,20 @@ const getLastPathSegment = (path: string): string => {
   return lastSegment;
 };
 
-export const deriveProgramState = async ({
+export const deriveProfiles = async ({
   configFilePath,
-}: CLIOptionsFinal = DEFAULT_CLI_OPTIONS_FINAL): Promise<ProgramState> => {
+}: CLIOptionsFinal = DEFAULT_CLI_OPTIONS_FINAL): Promise<
+  WorkspaceEnvProfile[]
+> => {
   const rawConfigFileContents = await fs
     .readFile(configFilePath, "utf8")
     .catch(() => "{}");
 
-  const untypedConfigData = JSON.parse(rawConfigFileContents);
-  const configData = workspaceEnvConfigInputSchema.parse(untypedConfigData);
+  const configFileData = workspaceEnvConfigInputSchema.parse(
+    JSON.parse(rawConfigFileContents),
+  );
 
-  const workspaces =
-    configData.workspaces ?? (await readWorkspacesFromProject());
+  const workspaces = await readWorkspacesFromProject();
 
   const workspacePaths = await Promise.all(
     workspaces.map(async (pathGlobPattern) => {
@@ -98,15 +99,41 @@ export const deriveProgramState = async ({
     throw new Error("No workspaces found");
   }
 
-  const workspaceDirectoryNames = workspacePaths.map(getLastPathSegment);
+  const workspacePathsToSyncTo = configFileData.syncEnvsTo
+    ? workspacePaths.filter((workspacePath) =>
+        configFileData.syncEnvsTo?.includes(getLastPathSegment(workspacePath)),
+      )
+    : workspacePaths;
 
-  const outputData: ProgramState = {
-    envDirectoryPath: configData.envDir ?? "./",
-    workspacePaths,
-    envFilePatterns: configData.envFilePatterns ?? DEFAULT_ENV_FILE_PATTERNS,
-    syncEnvsToWorkspaceDirectoryNames:
-      configData.syncEnvsTo ?? workspaceDirectoryNames,
+  const baseProfile: WorkspaceEnvProfile = {
+    envDirectoryPath: configFileData.envDir ?? "./",
+    workspacePaths: workspacePathsToSyncTo,
+    envFilePatterns:
+      configFileData.envFilePatterns ?? DEFAULT_ENV_FILE_PATTERNS,
   };
 
-  return programStateSchema.parse(outputData);
+  if (!configFileData.profiles) {
+    return [baseProfile];
+  }
+
+  configFileData.profiles.forEach((profile) => {
+    const invalidWorkspaceName = profile.workspaces.find((workspaceName) => {
+      const workspaceIsValid = workspacePaths.some((workspacePath) =>
+        workspacePath.endsWith(workspaceName),
+      );
+      return !workspaceIsValid;
+    });
+
+    if (invalidWorkspaceName) {
+      throw new Error(`Invalid workspace name: "${invalidWorkspaceName}"`);
+    }
+  });
+
+  return configFileData.profiles.map((profile) => ({
+    envDirectoryPath: profile.envDir ?? baseProfile.envDirectoryPath,
+    workspacePaths: workspacePaths.filter((workspacePath) =>
+      profile.workspaces.includes(getLastPathSegment(workspacePath)),
+    ),
+    envFilePatterns: profile.envFilePatterns ?? baseProfile.envFilePatterns,
+  }));
 };

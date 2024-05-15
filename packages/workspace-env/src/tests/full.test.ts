@@ -6,6 +6,9 @@ import { vol, fs as virtualFs } from "memfs";
 import { beforeEach, expect, test } from "vitest";
 import YAML from "yaml";
 
+const fileNameArrayContainsEnv = (files: string[]): boolean =>
+  files.some((file) => file.includes(".env"));
+
 beforeEach(() => {
   vol.reset();
 });
@@ -84,6 +87,60 @@ test("Basic Kitchen Sink", async () => {
   )) as string;
 
   expect(yesPackageEnvFileContent).toEqual("foo=bar");
+});
+
+test("Basic Profiles", async () => {
+  vol.fromJSON({
+    "package.json": JSON.stringify({
+      workspaces: ["packages/*"],
+    }),
+    "a-envs/.a.env": "workspace=a",
+    "b-envs/.b.env": "workspace=b",
+    "packages/a/package.json": "{}",
+    "packages/b/package.json": "{}",
+    "packages/c/package.json": "{}",
+    [DEFAULT_CONFIG_FILE_NAME]: stringifyConfig({
+      profiles: [
+        {
+          workspaces: ["a"],
+          envDir: "a-envs",
+        },
+        {
+          workspaces: ["b"],
+          envDir: "b-envs",
+        },
+      ],
+    }),
+  });
+
+  const startingFilesInA = await virtualFs.promises.readdir("packages/a");
+  const startingFilesInB = await virtualFs.promises.readdir("packages/b");
+  const startingFilesInC = await virtualFs.promises.readdir("packages/c");
+
+  expect(startingFilesInA).not.toSatisfy(fileNameArrayContainsEnv);
+  expect(startingFilesInB).not.toSatisfy(fileNameArrayContainsEnv);
+  expect(startingFilesInC).not.toSatisfy(fileNameArrayContainsEnv);
+
+  await run(theCommand, []);
+
+  const postSyncFilesInA = await virtualFs.promises.readdir("packages/a");
+  const postSyncFilesInB = await virtualFs.promises.readdir("packages/b");
+  const postSyncFilesInC = await virtualFs.promises.readdir("packages/c");
+
+  expect(postSyncFilesInA).toContain(".a.env");
+  expect(postSyncFilesInB).toContain(".b.env");
+  expect(postSyncFilesInC).not.toSatisfy(fileNameArrayContainsEnv);
+
+  const aEnvContent = await virtualFs.promises.readFile(
+    "packages/a/.a.env",
+    "utf8",
+  );
+  const bEnvContent = await virtualFs.promises.readFile(
+    "packages/b/.b.env",
+    "utf8",
+  );
+  expect(aEnvContent).toEqual("workspace=a");
+  expect(bEnvContent).toEqual("workspace=b");
 });
 
 test.todo("Basic Kitchen Sink w/ Custom Config Path");

@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { ProgramState } from "@/configTypes";
+import { WorkspaceEnvProfile } from "@/configTypes";
 import { glob } from "glob";
 
 const listEnvFilePaths = async (
@@ -50,30 +50,23 @@ const getLastSegmentOfPath = (path: string): string => {
   return lastSegment;
 };
 
-export const syncEnvs = async (programState: ProgramState) => {
-  const envFilesToCopy = await listEnvFilePaths(programState.envDirectoryPath, [
-    ...programState.envFilePatterns,
+export const runSyncForProfile = async (profile: WorkspaceEnvProfile) => {
+  const runSyncForProfile = await listEnvFilePaths(profile.envDirectoryPath, [
+    ...profile.envFilePatterns,
   ]);
-
-  const workspacePathsToSyncTo = programState.workspacePaths.filter(
-    (workspacePath) =>
-      programState.syncEnvsToWorkspaceDirectoryNames.some((syncPath) =>
-        workspacePath.endsWith(syncPath),
-      ),
-  );
 
   // Delete all existing envs
   await Promise.all(
-    workspacePathsToSyncTo.map((workspaceDirPath) =>
-      deleteAllEnvFilesInDir(workspaceDirPath, programState.envFilePatterns),
+    profile.workspacePaths.map((workspaceDirPath) =>
+      deleteAllEnvFilesInDir(workspaceDirPath, profile.envFilePatterns),
     ),
   );
 
   // Copy all envs
   await Promise.all(
-    envFilesToCopy.map(async (envSourceFilePath) =>
+    runSyncForProfile.map(async (envSourceFilePath) =>
       Promise.all(
-        workspacePathsToSyncTo.map(async (workspaceDirPath): Promise<void> => {
+        profile.workspacePaths.map(async (workspaceDirPath): Promise<void> => {
           const envDestFilePath = path.join(
             workspaceDirPath,
             getLastSegmentOfPath(envSourceFilePath),
