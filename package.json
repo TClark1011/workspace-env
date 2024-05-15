@@ -1,5 +1,5 @@
 {
-  "name": "workspace-env-monorepo",
+  "name": "workspace-env-ci-testing-monorepo",
   "version": "0.0.1",
   "description": "the monorepo containing all the code for workspace-env",
   "repository": "https://github.com/TClark1011/workspace-env.git",
