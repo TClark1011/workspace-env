@@ -76,8 +76,6 @@ export const readConfig = async ({
   const untypedConfigData = JSON.parse(rawConfigFileContents);
   const configData = workspaceEnvConfigInputSchema.parse(untypedConfigData);
 
-  console.log("(readConfig) 2. ", { configData });
-
   const workspaces =
     configData.workspaces ?? (await readWorkspacesFromProject());
 

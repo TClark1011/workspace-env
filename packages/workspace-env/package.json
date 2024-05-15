@@ -1,6 +1,6 @@
 {
   "name": "workspace-env",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "sync envs across your monorepo packages",
   "repository": {
     "type": "git",
@@ -18,7 +18,9 @@
     "test:only": "node --require ts-node/register --require ./src/tests/mocks.ts --test --test-only \"**/*.test.ts\"",
     "build": "tsc",
     "build:cli": "esbuild src/cli/bin.ts --bundle --platform=node --target=node10.4 --outfile=bin.js",
-    "prepublish": "pnpm build:cli"
+    "publish": "pnpm build:cli && npm publish",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "20.12.11",
