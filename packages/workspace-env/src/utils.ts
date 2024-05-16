@@ -8,3 +8,6 @@ export const guidedParse = <Schema extends z.ZodTypeAny>(
   schema: Schema,
   input: z.input<Schema>,
 ): z.infer<Schema> => schema.parse(input);
+
+export const getLastPathSegment = (path: string): string =>
+  path.split("/").pop() ?? path;
