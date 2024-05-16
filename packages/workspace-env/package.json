@@ -29,7 +29,7 @@
     "build": "pnpm build:lib && pnpm build:cli",
     "build:lib": "tsup src/index.ts --dts --out-dir=build --format esm,cjs",
     "build:cli": "esbuild src/cli/bin.ts --bundle --platform=node --target=node10.4 --outfile=bin/index.js",
-    "prepublish": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "prepublishOnly": "pnpm typecheck && pnpm lint && pnpm test && pnpm build",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit"
   },

@@ -20,6 +20,7 @@
     "node": "20.13.1"
   },
   "scripts": {
-    "build-run-cli": "pnpm --filter workspace-env build:cli && mv ./packages/workspace-env/bin.js ./bin.js && node ./bin.js"
+    "build-run-cli": "pnpm --filter workspace-env build:cli && mv ./packages/workspace-env/bin.js ./bin.js && node ./bin.js",
+    "clean-node-modules": "rm -rf ./packages/*/node_modules"
   }
 }
