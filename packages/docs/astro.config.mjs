@@ -26,7 +26,7 @@ export default defineConfig({
   ],
   vite: {
     ssr: {
-      external: true,
+      external: ["workspace-env"],
     },
   },
 });
