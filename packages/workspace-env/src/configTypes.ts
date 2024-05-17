@@ -71,8 +71,15 @@ export const DEFAULT_CLI_OPTIONS_FINAL: CLIOptionsFinal = {
   inWatchMode: false,
 };
 
+export const workspaceDefinitionSchema = z.object({
+  name: z.string(),
+  path: z.string(),
+});
+
+export type WorkspaceDefinition = z.infer<typeof workspaceDefinitionSchema>;
+
 export const workspaceEnvProfileSchema = z.object({
-  workspacePaths: z.array(z.string()),
+  workspaceDefinitions: z.array(workspaceDefinitionSchema),
   envDirectoryPath: z.string(),
   envFilePatterns: z.array(z.string()),
 });

@@ -1,15 +1,18 @@
-import { WorkspaceEnvConfigInput, WorkspaceEnvProfile } from "@/configTypes";
-import { getLastPathSegment } from "@/utils";
+import {
+  WorkspaceDefinition,
+  WorkspaceEnvConfigInput,
+  WorkspaceEnvProfile,
+} from "@/configTypes";
 
 type DeriveProfilesInput = {
   baselineProfile: WorkspaceEnvProfile;
-  workspacePaths: string[];
+  workspaceDefinitions: WorkspaceDefinition[];
   configFileData: WorkspaceEnvConfigInput;
 };
 
 export const deriveProfiles = async ({
   baselineProfile,
-  workspacePaths,
+  workspaceDefinitions,
   configFileData,
 }: DeriveProfilesInput): Promise<WorkspaceEnvProfile[]> => {
   if (!configFileData.profiles) {
@@ -19,8 +22,8 @@ export const deriveProfiles = async ({
   // Check that all profiles are valid
   configFileData.profiles.forEach((profile) => {
     const invalidWorkspaceName = profile.workspaces.find((workspaceName) => {
-      const workspaceIsValid = workspacePaths.some((workspacePath) =>
-        workspacePath.endsWith(workspaceName),
+      const workspaceIsValid = workspaceDefinitions.some(
+        ({ name }) => name === workspaceName,
       );
       return !workspaceIsValid;
     });
@@ -32,8 +35,8 @@ export const deriveProfiles = async ({
 
   return configFileData.profiles.map((profile) => ({
     envDirectoryPath: profile.envDir ?? baselineProfile.envDirectoryPath,
-    workspacePaths: workspacePaths.filter((workspacePath) =>
-      profile.workspaces.includes(getLastPathSegment(workspacePath)),
+    workspaceDefinitions: workspaceDefinitions.filter(({ name }) =>
+      profile.workspaces.includes(name),
     ),
     envFilePatterns: profile.envFilePatterns ?? baselineProfile.envFilePatterns,
   }));

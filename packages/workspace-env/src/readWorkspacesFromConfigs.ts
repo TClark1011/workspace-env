@@ -1,12 +1,6 @@
 import fs from "fs/promises";
 import YAML from "yaml";
 
-type WorkspacesSource = {
-  fileName: string;
-  parseFileContent: (fileContents: string) => unknown;
-  fieldName: string;
-};
-
 const hasStringArrayAtField = <Field extends string>(
   data: unknown,
   field: Field,
@@ -14,6 +8,12 @@ const hasStringArrayAtField = <Field extends string>(
   typeof data === "object" &&
   data !== null &&
   Array.isArray((data as Record<Field, unknown>)[field]);
+
+type WorkspacesSource = {
+  fileName: string;
+  parseFileContent: (fileContents: string) => unknown;
+  fieldName: string;
+};
 
 const WORKSPACE_SOURCES: WorkspacesSource[] = [
   {

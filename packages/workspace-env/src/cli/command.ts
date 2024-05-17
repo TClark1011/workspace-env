@@ -2,7 +2,8 @@ import { cliOptionsFinalSchema } from "@/configTypes";
 import { DEFAULT_CONFIG_FILE_NAME } from "@/constants";
 import { deriveBaselineProfile } from "@/deriveBaselineProfile";
 import { deriveProfiles } from "@/deriveProfiles";
-import { deriveWorkspacePaths } from "@/deriveWorkspacePaths";
+import { deriveWorkspaceDefinitionFromPath } from "@/deriveWorkspaceDefinitionFromPath";
+import { evaluateWorkspaceInputPath } from "@/evaluateWorkspaceInputPath";
 import { readConfigFile } from "@/readConfigFile";
 import { readWorkspacesFromConfigs } from "@/readWorkspacesFromConfigs";
 import { runSyncForProfile } from "@/runSyncForProfile";
@@ -37,14 +38,21 @@ export const theCommand = cmd.command({
 
     const configFileData = await readConfigFile(configFilePath);
     const workspaces = await readWorkspacesFromConfigs();
-    const workspacePaths = await deriveWorkspacePaths(workspaces);
+    const evaluatedWorkspacePaths = await Promise.all(
+      workspaces.map(evaluateWorkspaceInputPath),
+    ).then((r) => r.flat());
+
+    const workspaceDefinitions = await Promise.all(
+      evaluatedWorkspacePaths.map(deriveWorkspaceDefinitionFromPath),
+    ).then((r) => r.flat());
+
     const baselineProfile = await deriveBaselineProfile({
-      workspacePaths,
+      workspaceDefinitions,
       configFileData,
     });
     const profiles = await deriveProfiles({
       baselineProfile,
-      workspacePaths,
+      workspaceDefinitions,
       configFileData,
     });
 

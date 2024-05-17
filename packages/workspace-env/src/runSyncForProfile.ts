@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { WorkspaceEnvProfile } from "@/configTypes";
 import { glob } from "glob";
+import { forEachAsync } from "@/utils";
 
 const listEnvFilePaths = async (
   dir: string,
@@ -55,27 +56,29 @@ export const runSyncForProfile = async (profile: WorkspaceEnvProfile) => {
     ...profile.envFilePatterns,
   ]);
 
-  // Delete all existing envs
-  await Promise.all(
-    profile.workspacePaths.map((workspaceDirPath) =>
-      deleteAllEnvFilesInDir(workspaceDirPath, profile.envFilePatterns),
-    ),
+  const allWorkspacePaths = profile.workspaceDefinitions.map(
+    (workspaceDefinition) => workspaceDefinition.path,
+  );
+  await forEachAsync(allWorkspacePaths, (path) =>
+    deleteAllEnvFilesInDir(path, profile.envFilePatterns),
   );
 
   // Copy all envs
   await Promise.all(
     runSyncForProfile.map(async (envSourceFilePath) =>
       Promise.all(
-        profile.workspacePaths.map(async (workspaceDirPath): Promise<void> => {
-          const envDestFilePath = path.join(
-            workspaceDirPath,
-            getLastSegmentOfPath(envSourceFilePath),
-          );
+        profile.workspaceDefinitions.map(
+          async (workspaceDefinition): Promise<void> => {
+            const envDestFilePath = path.join(
+              workspaceDefinition.path,
+              getLastSegmentOfPath(envSourceFilePath),
+            );
 
-          await fs.copyFile(envSourceFilePath, envDestFilePath);
+            await fs.copyFile(envSourceFilePath, envDestFilePath);
 
-          return;
-        }),
+            return;
+          },
+        ),
       ),
     ),
   );

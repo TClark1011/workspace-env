@@ -1,25 +1,28 @@
-import { WorkspaceEnvConfigInput, WorkspaceEnvProfile } from "@/configTypes";
+import {
+  WorkspaceDefinition,
+  WorkspaceEnvConfigInput,
+  WorkspaceEnvProfile,
+} from "@/configTypes";
 import { DEFAULT_ENV_FILE_PATTERNS } from "@/constants";
-import { getLastPathSegment } from "@/utils";
 
 type DeriveBaselineProfileInput = {
-  workspacePaths: string[];
+  workspaceDefinitions: WorkspaceDefinition[];
   configFileData: WorkspaceEnvConfigInput;
 };
 
 export const deriveBaselineProfile = async ({
-  workspacePaths,
+  workspaceDefinitions,
   configFileData,
 }: DeriveBaselineProfileInput): Promise<WorkspaceEnvProfile> => {
-  const workspacePathsToSyncTo = configFileData.syncEnvsTo
-    ? workspacePaths.filter((workspacePath) =>
-        configFileData.syncEnvsTo?.includes(getLastPathSegment(workspacePath)),
+  const workspacesToSyncTo = configFileData.syncEnvsTo
+    ? workspaceDefinitions.filter((workspaceDefinition) =>
+        configFileData.syncEnvsTo?.includes(workspaceDefinition.name),
       )
-    : workspacePaths;
+    : workspaceDefinitions;
 
   return {
     envDirectoryPath: configFileData.envDir ?? "./",
-    workspacePaths: workspacePathsToSyncTo,
+    workspaceDefinitions: workspacesToSyncTo,
     envFilePatterns:
       configFileData.envFilePatterns ?? DEFAULT_ENV_FILE_PATTERNS,
   };

@@ -19,8 +19,12 @@ test("Basic Behaviour With No Config File", async () => {
       workspaces: ["packages/*"],
     }),
     ".env": "foo=bar",
-    "packages/a/package.json": "{}",
-    "packages/b/package.json": "{}",
+    "packages/a/package.json": JSON.stringify({
+      name: "a",
+    }),
+    "packages/b/package.json": JSON.stringify({
+      name: "b",
+    }),
   });
 
   await run(theCommand, []);
@@ -63,8 +67,12 @@ test("Basic Kitchen Sink", async () => {
       syncEnvsTo: ["yes"],
     }),
     "env/.env": "foo=bar",
-    "apps/no/package.json": "{}",
-    "apps/yes/package.json": "{}",
+    "apps/no/package.json": JSON.stringify({
+      name: "no",
+    }),
+    "apps/yes/package.json": JSON.stringify({
+      name: "yes",
+    }),
   });
 
   await run(theCommand, []);
@@ -96,9 +104,15 @@ test("Basic Profiles", async () => {
     }),
     "a-envs/.a.env": "workspace=a",
     "b-envs/.b.env": "workspace=b",
-    "packages/a/package.json": "{}",
-    "packages/b/package.json": "{}",
-    "packages/c/package.json": "{}",
+    "packages/a/package.json": JSON.stringify({
+      name: "a",
+    }),
+    "packages/b/package.json": JSON.stringify({
+      name: "b",
+    }),
+    "packages/c/package.json": JSON.stringify({
+      name: "c",
+    }),
     [DEFAULT_CONFIG_FILE_NAME]: stringifyConfig({
       profiles: [
         {
