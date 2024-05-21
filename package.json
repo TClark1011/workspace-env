@@ -23,6 +23,7 @@
     "build-run-cli": "pnpm --filter workspace-env build:cli && mv ./packages/workspace-env/bin.js ./bin.js && node ./bin.js",
     "clean": "pnpm run clean:node-modules && pnpm run clean:lockfiles",
     "clean:node-modules": "rm -rf ./packages/*/node_modules",
-    "clean:lockfiles": "rm ./packages/*/pnpm-lock.yaml && rm pnpm-lock.yaml"
+    "clean:lockfiles": "rm ./packages/*/pnpm-lock.yaml && rm pnpm-lock.yaml",
+    "postinstall": "pnpm --filter workspace-env build:cli"
   }
 }
