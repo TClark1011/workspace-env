@@ -3,7 +3,10 @@ import {
   WorkspaceEnvConfigInput,
   WorkspaceEnvProfile,
 } from "@/configTypes";
-import { DEFAULT_ENV_FILE_PATTERNS } from "@/constants";
+import {
+  DEFAULT_ENV_FILE_PATTERNS,
+  DEFAULT_FILE_MERGE_BEHAVIOUR,
+} from "@/constants";
 
 type DeriveBaselineProfileInput = {
   workspaceDefinitions: WorkspaceDefinition[];
@@ -25,5 +28,7 @@ export const deriveBaselineProfile = async ({
     workspaceDefinitions: workspacesToSyncTo,
     envFilePatterns:
       configFileData.envFilePatterns ?? DEFAULT_ENV_FILE_PATTERNS,
+    mergeBehaviour:
+      configFileData.mergeBehaviour ?? DEFAULT_FILE_MERGE_BEHAVIOUR,
   };
 };

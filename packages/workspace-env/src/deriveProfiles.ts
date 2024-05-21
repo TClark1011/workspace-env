@@ -39,5 +39,6 @@ export const deriveProfiles = async ({
       profile.workspaces.includes(name),
     ),
     envFilePatterns: profile.envFilePatterns ?? baselineProfile.envFilePatterns,
+    mergeBehaviour: profile.mergeBehaviour ?? baselineProfile.mergeBehaviour,
   }));
 };

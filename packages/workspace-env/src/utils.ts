@@ -99,3 +99,10 @@ export const evaluatePossibleGlob = async (
     nodir: false,
   });
 };
+
+export const matchString = <T extends string, Result>(
+  string: T,
+  matcher: {
+    [K in T]: Result;
+  },
+): Result => matcher[string];

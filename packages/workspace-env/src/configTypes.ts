@@ -1,6 +1,12 @@
 import { DEFAULT_CONFIG_FILE_NAME } from "@/constants";
 import { z } from "zod";
 
+export const envFileMergeBehaviourSchema = z
+  .enum(["overwrite", "prepend", "append"])
+  .describe("The behaviour to apply when merging environment profiles.");
+
+export type EnvFileMergeBehaviour = z.infer<typeof envFileMergeBehaviourSchema>;
+
 const workspaceEnvBehaviourInputFieldsSchema = z.object({
   envDir: z
     .string()
@@ -22,6 +28,7 @@ const workspaceEnvBehaviourInputFieldsSchema = z.object({
     .describe(
       "The file patterns to search for environment files. Can use specific file names or glob patterns.",
     ),
+  mergeBehaviour: envFileMergeBehaviourSchema.optional(),
 });
 
 export type WorkspaceEnvBehaviourOptions = z.infer<
@@ -82,6 +89,7 @@ export const workspaceEnvProfileSchema = z.object({
   workspaceDefinitions: z.array(workspaceDefinitionSchema),
   envDirectoryPath: z.string(),
   envFilePatterns: z.array(z.string()),
+  mergeBehaviour: envFileMergeBehaviourSchema,
 });
 
 export type WorkspaceEnvProfile = z.infer<typeof workspaceEnvProfileSchema>;

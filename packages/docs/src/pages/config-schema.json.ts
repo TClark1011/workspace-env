@@ -7,8 +7,10 @@ const finalConfigInputSchema = workspaceEnvConfigInputSchema.extend({
   $schema: z.string().optional(),
 });
 
+const jsonSchemaData = zodToJsonSchema(finalConfigInputSchema, {});
+
 export const GET: APIRoute = async () =>
-  new Response(JSON.stringify(zodToJsonSchema(finalConfigInputSchema)), {
+  new Response(JSON.stringify(jsonSchemaData), {
     headers: {
       "content-type": "application/json",
     },

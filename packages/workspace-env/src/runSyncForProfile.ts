@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { WorkspaceEnvProfile } from "@/configTypes";
 import { glob } from "glob";
-import { forEachAsync } from "@/utils";
+import { checkPathIsValid, forEachAsync, matchString } from "@/utils";
 
 const listEnvFilePaths = async (
   dir: string,
@@ -52,7 +52,7 @@ const getLastSegmentOfPath = (path: string): string => {
 };
 
 export const runSyncForProfile = async (profile: WorkspaceEnvProfile) => {
-  const runSyncForProfile = await listEnvFilePaths(profile.envDirectoryPath, [
+  const envFilePathsToSync = await listEnvFilePaths(profile.envDirectoryPath, [
     ...profile.envFilePatterns,
   ]);
 
@@ -65,16 +65,37 @@ export const runSyncForProfile = async (profile: WorkspaceEnvProfile) => {
 
   // Copy all envs
   await Promise.all(
-    runSyncForProfile.map(async (envSourceFilePath) =>
+    envFilePathsToSync.map(async (envSourceFilePath) =>
       Promise.all(
         profile.workspaceDefinitions.map(
           async (workspaceDefinition): Promise<void> => {
+            await fs.readdir(workspaceDefinition.path); // fixes weird issue where existing file is sometimes not found
+
             const envDestFilePath = path.join(
               workspaceDefinition.path,
               getLastSegmentOfPath(envSourceFilePath),
             );
 
-            await fs.copyFile(envSourceFilePath, envDestFilePath);
+            const fileAlreadyExists = await checkPathIsValid(envDestFilePath);
+
+            if (!fileAlreadyExists || profile.mergeBehaviour === "overwrite") {
+              await fs.copyFile(envSourceFilePath, envDestFilePath);
+
+              return;
+            }
+
+            const envFileContent = await fs.readFile(envSourceFilePath, {
+              encoding: "utf8",
+            });
+            const existingFileContent = await fs.readFile(envDestFilePath, {
+              encoding: "utf8",
+            });
+            const newFileContent = matchString(profile.mergeBehaviour, {
+              append: `${existingFileContent}\n${envFileContent}`,
+              prepend: `${envFileContent}\n${existingFileContent}`,
+            });
+
+            await fs.writeFile(envDestFilePath, newFileContent);
 
             return;
           },
