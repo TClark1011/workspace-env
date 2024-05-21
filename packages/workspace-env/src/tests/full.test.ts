@@ -157,4 +157,112 @@ test("Basic Profiles", async () => {
   expect(bEnvContent).toEqual("workspace=b");
 });
 
-test.todo("Basic Kitchen Sink w/ Custom Config Path");
+test("Workspaces point directly to a workspace + Lerna Config", async () => {
+  vol.fromJSON({
+    "lerna.json": JSON.stringify({
+      packages: ["apps/frontend"],
+    }),
+    "apps/frontend/package.json": JSON.stringify({
+      name: "frontend",
+    }),
+    ".env": "foo=bar",
+  });
+
+  await run(theCommand, []);
+
+  const filesInFrontend = await virtualFs.promises.readdir("apps/frontend");
+
+  expect(filesInFrontend).toContain(".env");
+
+  const frontendEnvContent = await virtualFs.promises.readFile(
+    "apps/frontend/.env",
+    "utf8",
+  );
+  expect(frontendEnvContent).toEqual("foo=bar");
+});
+
+test("Workspace pointing directly to a workspace and others with wildcard", async () => {
+  vol.fromJSON({
+    "package.json": JSON.stringify({
+      workspaces: ["apps/*", "packages/utils"],
+    }),
+    "apps/frontend/package.json": JSON.stringify({
+      name: "frontend",
+    }),
+    "apps/backend/package.json": JSON.stringify({
+      name: "backend",
+    }),
+    "packages/utils/package.json": JSON.stringify({
+      name: "utils",
+    }),
+    ".env": "foo=bar",
+  });
+
+  await run(theCommand, []);
+
+  const filesInFrontend = await virtualFs.promises.readdir("apps/frontend");
+  const filesInBackend = await virtualFs.promises.readdir("apps/backend");
+  const filesInUtils = await virtualFs.promises.readdir("packages/utils");
+
+  expect(filesInFrontend).toContain(".env");
+  expect(filesInBackend).toContain(".env");
+  expect(filesInUtils).toContain(".env");
+
+  const frontendEnvContent = await virtualFs.promises.readFile(
+    "apps/frontend/.env",
+    "utf8",
+  );
+  const backendEnvContent = await virtualFs.promises.readFile(
+    "apps/backend/.env",
+    "utf8",
+  );
+  const utilsEnvContent = await virtualFs.promises.readFile(
+    "packages/utils/.env",
+    "utf8",
+  );
+
+  expect(frontendEnvContent).toEqual("foo=bar");
+  expect(backendEnvContent).toEqual("foo=bar");
+  expect(utilsEnvContent).toEqual("foo=bar");
+});
+
+test("Basic Kitchen Sink w/ Custom Config Path", async () => {
+  vol.fromJSON({
+    "pnpm-workspace.yaml": YAML.stringify({
+      packages: ["apps/*"],
+    }),
+    "custom-config.json": stringifyConfig({
+      envDir: "env",
+      envFilePatterns: [".env"],
+      syncEnvsTo: ["yes"],
+    }),
+    "env/.env": "foo=bar",
+    "apps/no/package.json": JSON.stringify({
+      name: "no",
+    }),
+    "apps/yes/package.json": JSON.stringify({
+      name: "yes",
+    }),
+  });
+
+  await run(theCommand, ["--config", "./custom-config.json"]);
+
+  const filesInNoPackage = (await virtualFs.promises.readdir(
+    "apps/no",
+  )) as string[];
+
+  expect(filesInNoPackage).not.toContain(".env");
+
+  const filesInYesPackage = (await virtualFs.promises.readdir(
+    "apps/yes",
+  )) as string[];
+
+  expect(filesInYesPackage).toContain(".env");
+
+  const yesPackageEnvFileContent = (await virtualFs.promises.readFile(
+    "apps/yes/.env",
+    "utf8",
+  )) as string;
+
+  expect(yesPackageEnvFileContent).toEqual("foo=bar");
+});
