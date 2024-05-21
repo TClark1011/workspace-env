@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { WorkspaceEnvProfile } from "@/configTypes";
 import { glob } from "glob";
-import { checkPathIsValid, forEachAsync, matchString } from "@/utils";
+import { checkPathIsValid, matchString } from "@/utils";
 
 const listEnvFilePaths = async (
   dir: string,
@@ -16,28 +16,6 @@ const listEnvFilePaths = async (
   );
 
   return files;
-};
-
-const deleteAllEnvFilesInDir = async (dir: string, patterns: string[]) => {
-  const filePaths = await listEnvFilePaths(
-    dir,
-    patterns.map((pattern) => `./${pattern}`),
-  );
-
-  await Promise.all(
-    filePaths.map(async (filePath) => {
-      const fileExists = await fs
-        .access(filePath)
-        .then(() => true)
-        .catch(() => false);
-
-      if (!fileExists) {
-        return;
-      }
-
-      await fs.rm(filePath);
-    }),
-  );
 };
 
 const getLastSegmentOfPath = (path: string): string => {
@@ -56,20 +34,13 @@ export const runSyncForProfile = async (profile: WorkspaceEnvProfile) => {
     ...profile.envFilePatterns,
   ]);
 
-  const allWorkspacePaths = profile.workspaceDefinitions.map(
-    (workspaceDefinition) => workspaceDefinition.path,
-  );
-  await forEachAsync(allWorkspacePaths, (path) =>
-    deleteAllEnvFilesInDir(path, profile.envFilePatterns),
-  );
-
   // Copy all envs
   await Promise.all(
     envFilePathsToSync.map(async (envSourceFilePath) =>
       Promise.all(
         profile.workspaceDefinitions.map(
           async (workspaceDefinition): Promise<void> => {
-            await fs.readdir(workspaceDefinition.path); // fixes weird issue where existing file is sometimes not found
+            // const filesInWorkspace = await fs.readdir(workspaceDefinition.path); // fixes weird issue where existing file is sometimes not found
 
             const envDestFilePath = path.join(
               workspaceDefinition.path,

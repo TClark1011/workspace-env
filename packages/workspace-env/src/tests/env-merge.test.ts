@@ -405,7 +405,94 @@ describe("Env Merging", () => {
   });
 
   describe("Multiple Overlaps with Different Merge Behaviours", async () => {
-    test.todo("Per-profile behaviour conflict with root");
-    test.todo("Per-profile conflict with each other");
+    test("Per-profile behaviour conflict with root", async () => {
+      vol.fromJSON({
+        "package.json": JSON.stringify({
+          workspaces: ["packages/*"],
+        }),
+        "packages/frontend/package.json": JSON.stringify({
+          name: "frontend",
+        }),
+        ".env": "common=foo",
+        "prepend/.env": "prepend=foo",
+        "append/.env": "append=foo",
+        [DEFAULT_CONFIG_FILE_NAME]: stringifyConfig({
+          mergeBehaviour: "append",
+          profiles: [
+            {
+              workspaces: ["frontend"],
+            },
+            {
+              workspaces: ["frontend"],
+              envDir: "prepend",
+              mergeBehaviour: "prepend",
+            },
+            {
+              workspaces: ["frontend"],
+              envDir: "append",
+            },
+          ],
+        }),
+      });
+
+      await run(theCommand, []);
+
+      const filesInFrontend =
+        await virtualFs.promises.readdir("packages/frontend");
+      expect(filesInFrontend).toContain(".env");
+
+      const frontendEnvFileContent = await virtualFs.promises.readFile(
+        "packages/frontend/.env",
+        "utf8",
+      );
+      expect(frontendEnvFileContent).toEqual(
+        "prepend=foo\ncommon=foo\nappend=foo",
+      );
+    });
+    test("Per-profile conflict with each other", async () => {
+      vol.fromJSON({
+        "package.json": JSON.stringify({
+          workspaces: ["packages/*"],
+        }),
+        "packages/frontend/package.json": JSON.stringify({
+          name: "frontend",
+        }),
+        ".env": "common=foo",
+        "prepend/.env": "prepend=foo",
+        "append/.env": "append=foo",
+        [DEFAULT_CONFIG_FILE_NAME]: stringifyConfig({
+          mergeBehaviour: "overwrite",
+          profiles: [
+            {
+              workspaces: ["frontend"],
+            },
+            {
+              workspaces: ["frontend"],
+              envDir: "prepend",
+              mergeBehaviour: "prepend",
+            },
+            {
+              workspaces: ["frontend"],
+              envDir: "append",
+              mergeBehaviour: "append",
+            },
+          ],
+        }),
+      });
+
+      await run(theCommand, []);
+
+      const filesInFrontend =
+        await virtualFs.promises.readdir("packages/frontend");
+      expect(filesInFrontend).toContain(".env");
+
+      const frontendEnvFileContent = await virtualFs.promises.readFile(
+        "packages/frontend/.env",
+        "utf8",
+      );
+      expect(frontendEnvFileContent).toEqual(
+        "prepend=foo\ncommon=foo\nappend=foo",
+      );
+    });
   });
 });

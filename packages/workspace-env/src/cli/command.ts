@@ -56,6 +56,8 @@ export const theCommand = cmd.command({
       configFileData,
     });
 
-    await Promise.all(profiles.map(runSyncForProfile));
+    for (const profile of profiles) {
+      await runSyncForProfile(profile);
+    }
   },
 });

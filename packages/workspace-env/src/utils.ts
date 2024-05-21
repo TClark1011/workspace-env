@@ -106,3 +106,12 @@ export const matchString = <T extends string, Result>(
     [K in T]: Result;
   },
 ): Result => matcher[string];
+
+export const runAsyncInOrder = async <T>(
+  arr: T[],
+  callback: (item: T) => Promise<void>,
+): Promise<void> => {
+  for (const item of arr) {
+    await callback(item);
+  }
+};
